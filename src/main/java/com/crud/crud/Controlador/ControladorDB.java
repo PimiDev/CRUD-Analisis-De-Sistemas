@@ -11,7 +11,6 @@ public class ControladorDB {
     private static final String USER = "usuario1";
     private static final String PASSWORD = "superpassword";
 
-
     /**
      * Metodo para dar de alta a personas utilizando los datos de un opbjeto Persona
      */
@@ -155,7 +154,7 @@ public class ControladorDB {
     }
 
     /**
-     *Metodo para consultar todos los telefonos de una sola persona
+     * Metodo para consultar todos los telefonos de una sola persona
      */
 
     public ArrayList<String> getTelefonosPorPersona(Persona persona) {
@@ -174,8 +173,7 @@ public class ControladorDB {
             System.out.println("Conectando a la base de datos...");
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
 
-            // 3. Consulta usando TUS nombres de columnas exactos: 'telefono' y 'personaId'
-            System.out.println("\n=== CONSULTANDO TELÉFONOS DE LA PERSONA ID: " + id + " ===");
+            System.out.println("\nconsultando telefonos");
             String sql = "SELECT telefono FROM Telefonos WHERE personaId = ?";
             pstmt = conn.prepareStatement(sql);
 
@@ -208,6 +206,196 @@ public class ControladorDB {
         }
 
         return listaTelefonos;
+    }
+
+    /**
+     * Metodo para eliminar telefono asociado a una persona
+     */
+
+    public void eliminarTelefono(Persona persona, String numeroTelefono) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        int personaId = persona.getId();
+
+        try {
+            // 1. Registrar el driver JDBC
+            Class.forName("org.mariadb.jdbc.Driver");
+
+            // 2. Establecer la conexión
+            System.out.println("Conectando a la base de datos...");
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+            System.out.println("\nEliminando telefono");
+            String sql = "DELETE FROM Telefonos WHERE personaId = ? AND telefono = ?";
+            pstmt = conn.prepareStatement(sql);
+
+            // 4. Asignar los valores a los parámetros '?'
+            pstmt.setInt(1, personaId);
+            pstmt.setString(2, numeroTelefono);
+
+            // 5. Ejecutar la eliminación en la base de datos
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                System.out.println("Teléfono " + numeroTelefono + " eliminado");
+            } else {
+                System.out.println("No se encontró el teléfono");
+            }
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 6. Cerrar recursos manualmente en el bloque finally
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Metodo para agregar un telefono a una persona
+     */
+
+    public void agregarTelefono(Persona persona, String numeroTelefono) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        int personaId = persona.getId();
+
+        try {
+            // 1. Registrar el driver JDBC
+            Class.forName("org.mariadb.jdbc.Driver");
+
+            // 2. Establecer la conexión
+            System.out.println("Conectando a la base de datos...");
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+            System.out.println("\nEliminando telefono");
+            String sql = "INSERT INTO Telefonos (personaId, telefono) VALUES (?,?)";
+            pstmt = conn.prepareStatement(sql);
+
+            // 4. Asignar los valores a los parámetros '?'
+            pstmt.setInt(1, personaId);
+            pstmt.setString(2, numeroTelefono);
+
+            // 5. Ejecutar la insercion en la base de datos
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                System.out.println("Teléfono " + numeroTelefono + " agregado");
+            } else {
+                System.out.println("No se pudo agregar el video");
+            }
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 6. Cerrar recursos manualmente en el bloque finally
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Metodo para modificar el nombre de una persona utilizando su id
+     */
+    public void modificarNombre(Persona persona, String nuevoNombre) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        String sql = "UPDATE Personas SET nombre = ? WHERE id = ?";
+
+        try {
+            // 1. Registrar el driver JDBC
+            Class.forName("org.mariadb.jdbc.Driver");
+            // 2. Establecer la conexión
+            System.out.println("Conectando a la base de datos...");
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            // 3. Preparar el comando de actualizar
+            System.out.println("\nMODIFICAR NOMBRE DE PERSONA");
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, nuevoNombre);
+            pstmt.setInt(2, persona.getId());
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                System.out.println("Nombre modificado correctamente");
+            } else {
+                System.out.println("No se pudo modificar el nombre");
+            }
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 6. Cerrar recursos
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Metodo para modificar la direccion de una persona utilizando su id
+     */
+    public void modificarDireccion(Persona persona, String nuevaDireccion) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        String sql = "UPDATE Personas SET direccion = ? WHERE id = ?";
+
+        try {
+            // 1. Registrar el driver JDBC
+            Class.forName("org.mariadb.jdbc.Driver");
+            // 2. Establecer la conexión
+            System.out.println("Conectando a la base de datos...");
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            // 3. Preparar el comando
+            System.out.println("\nmodificar direccion");
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, nuevaDireccion);
+            pstmt.setInt(2, persona.getId());
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                System.out.println("Dirección modificada");
+            } else {
+                System.out.println("No se pudo modificar direccion");
+            }
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 6. Cerrar recursos
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
     }
 
 }
